@@ -1,0 +1,932 @@
+create database campusplacementdb;
+use campusplacementdb;
+create table students (
+    studentid int primary key auto_increment,
+    studentname varchar(100) not null,
+    gender varchar(20),
+    department varchar(50) not null,
+    cgpa decimal(3,2) check (cgpa between 0 and 10),
+    graduationyear year not null,
+    city varchar(50),
+    phone varchar(15) unique,
+    email varchar(100) unique not null,
+    placementstatus varchar(30) default 'Not Placed'
+);
+create table companies (
+companyid int primary key auto_increment,
+    companyname varchar(100) not null unique,
+    industry varchar(50),
+    companylocation varchar(100),
+    companysize varchar(30),
+    minimumcgpa decimal(3,2) check (minimumcgpa between 0 and 10)
+);
+create table jobroles ( 
+    jobroleid int primary key auto_increment, 
+    companyid int not null, 
+    rolename varchar(100) not null, 
+    jobtype varchar(30), 
+    minimumcgpa decimal(3,2) check (minimumcgpa between 0 and 10), 
+    packagelpa decimal(6,2) check (packagelpa >= 0), 
+    vacancies int check (vacancies > 0), 
+    constraint fk_jobrole_company 
+        foreign key (companyid) 
+        references companies(companyid) 
+        on delete cascade 
+        on update cascade 
+);
+create table applications (
+    applicationid int primary key auto_increment,
+    studentid int not null,
+    jobroleid int not null,
+    applicationdate date not null,
+    applicationstatus varchar(30) default 'Applied',
+    interviewscore decimal(5,2) check (interviewscore between 0 and 100),
+    finalstatus varchar(30) default 'Pending',
+    constraint fk_application_student
+        foreign key (studentid)
+        references students(studentid)
+        on delete cascade
+        on update cascade,
+        constraint fk_application_jobrole
+        foreign key (jobroleid)
+        references jobroles(jobroleid)
+        on delete cascade
+        on update cascade
+        );
+create table skills (
+skillid int primary key auto_increment,
+skillname varchar(50) not null unique,
+skillcategory varchar(50)
+);
+ create table studentskills ( 
+    studentid int, 
+    skillid int, 
+    skilllevel varchar(30), 
+    primary key (studentid, skillid),
+    constraint fk_studentskills_student 
+        foreign key (studentid) 
+        references students(studentid) 
+        on delete cascade 
+        on update cascade, 
+        constraint fk_studentskills_skill 
+        foreign key (skillid) 
+        references skills(skillid) 
+        on delete cascade 
+        on update cascade 
+);
+INSERT INTO Companies
+(CompanyName, Industry, CompanyLocation, CompanySize, MinimumCGPA)
+VALUES
+('TCS', 'IT Services', 'Pune', 'Large', 6.00),
+('Infosys', 'IT Services', 'Bengaluru', 'Large', 6.50),
+('Accenture', 'Consulting', 'Bengaluru', 'Large', 6.50),
+('Deloitte', 'Consulting', 'Hyderabad', 'Large', 7.00),
+('Wipro', 'IT Services', 'Bengaluru', 'Large', 6.00),
+('Cognizant', 'IT Services', 'Chennai', 'Large', 6.50),
+('Capgemini', 'IT Services', 'Mumbai', 'Large', 6.00),
+('IBM', 'Technology', 'Bengaluru', 'Large', 7.00),
+('HCLTech', 'IT Services', 'Noida', 'Large', 6.00),
+('Tech Mahindra', 'IT Services', 'Pune', 'Large', 6.00);
+
+INSERT INTO JobRoles
+(CompanyID, RoleName, JobType, MinimumCGPA, PackageLPA, Vacancies)
+VALUES
+(1, 'Software Developer', 'Full Time', 7.00, 7.20, 8),
+(1, 'Data Analyst', 'Full Time', 7.50, 8.50, 5),
+(2, 'System Engineer', 'Full Time', 6.50, 6.50, 10),
+(2, 'Data Analyst', 'Full Time', 7.00, 7.80, 4),
+(3, 'Associate Software Engineer', 'Full Time', 6.50, 7.00, 8),
+(3, 'Business Analyst', 'Full Time', 7.50, 9.00, 3),
+(4, 'Analyst', 'Full Time', 7.50, 10.00, 4),
+(4, 'Technology Consultant', 'Full Time', 8.00, 11.00, 2),
+(5, 'Project Engineer', 'Full Time', 6.00, 5.50, 10),
+(6, 'Programmer Analyst', 'Full Time', 6.50, 6.75, 8),
+(7, 'Software Engineer', 'Full Time', 6.50, 6.80, 7),
+(8, 'Data Engineer', 'Full Time', 7.50, 10.50, 3),
+(9, 'Graduate Engineer Trainee', 'Full Time', 6.00, 5.80, 10),
+(10, 'Software Engineer', 'Full Time', 6.50, 6.20, 8),
+(10, 'Business Analyst', 'Full Time', 7.00, 7.50, 4);
+
+INSERT INTO Students
+(StudentName, Gender, Department, CGPA, GraduationYear, City, Phone, Email, PlacementStatus)
+VALUES
+('Aarav Sharma', 'Male', 'Computer Science', 9.10, 2027, 'Raipur', '9876501001', 'aarav.sharma@campus.edu', 'Placed'),
+('Ananya Verma', 'Female', 'Computer Science', 8.80, 2027, 'Bhilai', '9876501002', 'ananya.verma@campus.edu', 'Placed'),
+('Rohan Singh', 'Male', 'Information Technology', 8.40, 2027, 'Raipur', NULL, 'rohan.singh@campus.edu', 'Shortlisted'),
+('Priya Patel', 'Female', 'Computer Science', 9.30, 2027, 'Nagpur', '9876501004', 'priya.patel@campus.edu', 'Placed'),
+('Aditya Mehta', 'Male', 'Electronics', 7.80, 2027, 'Raipur', '9876501005', 'aditya.mehta@campus.edu', 'Not Placed'),
+('Sneha Gupta', 'Female', 'Information Technology', 8.90, 2027, 'Bilaspur', '9876501006', 'sneha.gupta@campus.edu', 'Placed'),
+('Rahul Yadav', 'Male', 'Mechanical', 7.20, 2027, 'Durg', '9876501007', 'rahul.yadav@campus.edu', 'Not Placed'),
+('Kavya Nair', 'Female', 'Computer Science', 8.60, 2027, 'Raipur', '9876501008', 'kavya.nair@campus.edu', 'Placed'),
+('Arjun Rao', 'Male', 'Information Technology', 8.10, 2027, 'Hyderabad', '9876501009', 'arjun.rao@campus.edu', 'Shortlisted'),
+('Neha Jain', 'Female', 'Computer Science', 9.00, 2027, 'Raipur', '9876501010', 'neha.jain@campus.edu', 'Placed'),
+('Vikram Das', 'Male', 'Civil', 7.00, 2027, 'Ranchi', '9876501011', 'vikram.das@campus.edu', 'Not Placed'),
+('Ishita Roy', 'Female', 'Information Technology', 8.70, 2027, 'Kolkata', '9876501012', 'ishita.roy@campus.edu', 'Placed'),
+('Manish Kumar', 'Male', 'Computer Science', 7.90, 2027, 'Patna', '9876501013', 'manish.kumar@campus.edu', 'Shortlisted'),
+('Simran Kaur', 'Female', 'Electronics', 8.20, 2027, 'Raipur', '9876501014', 'simran.kaur@campus.edu', 'Placed'),
+('Karan Malhotra', 'Male', 'Computer Science', 8.50, 2027, 'Delhi', '9876501015', 'karan.malhotra@campus.edu', 'Placed'),
+('Pooja Sahu', 'Female', 'Information Technology', 7.60, 2027, 'Raipur', '9876501016', 'pooja.sahu@campus.edu', 'Not Placed'),
+('Yash Thakur', 'Male', 'Mechanical', 7.50, 2027, 'Bhilai', NULL, 'yash.thakur@campus.edu', 'Shortlisted'),
+('Meera Shah', 'Female', 'Computer Science', 9.20, 2027, 'Mumbai', '9876501018', 'meera.shah@campus.edu', 'Placed'),
+('Nikhil Verma', 'Male', 'Civil', 7.30, 2027, 'Raipur', '9876501019', 'nikhil.verma@campus.edu', 'Not Placed'),
+('Tanya Kapoor', 'Female', 'Information Technology', 8.30, 2027, 'Delhi', '9876501020', 'tanya.kapoor@campus.edu', 'Placed'),
+('Dev Patel', 'Male', 'Computer Science', 8.70, 2027, 'Ahmedabad', '9876501021', 'dev.patel@campus.edu', 'Placed'),
+('Riya Sen', 'Female', 'Electronics', 8.00, 2027, 'Kolkata', '9876501022', 'riya.sen@campus.edu', 'Shortlisted'),
+('Mohit Agarwal', 'Male', 'Computer Science', 7.40, 2027, 'Raipur', '9876501023', 'mohit.agarwal@campus.edu', 'Not Placed'),
+('Sakshi Mishra', 'Female', 'Information Technology', 8.95, 2027, 'Lucknow', '9876501024', 'sakshi.mishra@campus.edu', 'Placed'),
+('Harsh Vyas', 'Male', 'Mechanical', 7.70, 2027, 'Indore', '9876501025', 'harsh.vyas@campus.edu', 'Shortlisted'),
+('Nandini Joshi', 'Female', 'Computer Science', 8.40, 2027, 'Raipur', '9876501026', 'nandini.joshi@campus.edu', 'Placed'),
+('Abhishek Jain', 'Male', 'Information Technology', 8.10, 2027, 'Bhopal', '9876501027', 'abhishek.jain@campus.edu', 'Not Placed'),
+('Muskan Khan', 'Female', 'Electronics', 8.60, 2027, 'Raipur', '9876501028', 'muskan.khan@campus.edu', 'Placed'),
+('Siddharth Bose', 'Male', 'Civil', 7.80, 2027, 'Kolkata', '9876501029', 'siddharth.bose@campus.edu', 'Not Placed'),
+('Aditi Kulkarni', 'Female', 'Computer Science', 9.00, 2027, 'Pune', '9876501030', 'aditi.kulkarni@campus.edu', 'Placed');
+
+INSERT INTO Skills
+(SkillName, SkillCategory)
+VALUES
+('SQL', 'Database'),
+('Python', 'Programming'),
+('Java', 'Programming'),
+('C++', 'Programming'),
+('Power BI', 'Analytics'),
+('Excel', 'Analytics'),
+('Machine Learning', 'AI'),
+('Data Analysis', 'Analytics'),
+('Communication', 'Soft Skill'),
+('Problem Solving', 'Soft Skill'),
+('JavaScript', 'Web Development'),
+('HTML', 'Web Development'),
+('CSS', 'Web Development'),
+('Cloud Computing', 'Cloud'),
+('Git', 'Tools');
+
+INSERT INTO StudentSkills
+(StudentID, SkillID, SkillLevel)
+VALUES
+(1, 1, 'Advanced'),
+(1, 2, 'Advanced'),
+(1, 5, 'Intermediate'),
+(1, 8, 'Advanced'),
+(2, 1, 'Advanced'),
+(2, 2, 'Intermediate'),
+(2, 6, 'Advanced'),
+(2, 9, 'Advanced'),
+(3, 1, 'Intermediate'),
+(3, 2, 'Intermediate'),
+(3, 3, 'Intermediate'),
+(4, 1, 'Advanced'),
+(4, 2, 'Advanced'),
+(4, 5, 'Advanced'),
+(4, 7, 'Intermediate'),
+(5, 3, 'Advanced'),
+(5, 4, 'Intermediate'),
+(6, 1, 'Advanced'),
+(6, 2, 'Advanced'),
+(6, 8, 'Advanced'),
+(7, 4, 'Intermediate'),
+(7, 10, 'Intermediate'),
+(8, 1, 'Advanced'),
+(8, 5, 'Intermediate'),
+(8, 6, 'Advanced'),
+(9, 2, 'Intermediate'),
+(9, 3, 'Advanced'),
+(9, 10, 'Advanced'),
+(10, 1, 'Advanced'),
+(10, 2, 'Advanced'),
+(10, 8, 'Advanced'),
+(11, 4, 'Intermediate'),
+(12, 1, 'Advanced'),
+(12, 2, 'Advanced'),
+(12, 7, 'Intermediate'),
+(13, 1, 'Intermediate'),
+(13, 2, 'Intermediate'),
+(14, 1, 'Intermediate'),
+(14, 6, 'Advanced'),
+(15, 1, 'Advanced'),
+(15, 5, 'Advanced'),
+(16, 2, 'Intermediate'),
+(16, 8, 'Intermediate'),
+(17, 4, 'Intermediate'),
+(18, 1, 'Advanced'),
+(18, 2, 'Advanced'),
+(18, 7, 'Advanced'),
+(19, 4, 'Intermediate'),
+(20, 1, 'Intermediate'),
+(20, 2, 'Intermediate'),
+(21, 1, 'Advanced'),
+(21, 2, 'Advanced'),
+(22, 5, 'Intermediate'),
+(23, 3, 'Intermediate'),
+(24, 1, 'Advanced'),
+(24, 2, 'Advanced'),
+(25, 10, 'Advanced'),
+(26, 1, 'Advanced'),
+(26, 5, 'Intermediate'),
+(27, 2, 'Intermediate'),
+(28, 1, 'Intermediate'),
+(28, 9, 'Advanced'),
+(29, 4, 'Intermediate'),
+(30, 1, 'Advanced'),
+(30, 2, 'Advanced'),
+(30, 5, 'Advanced');
+
+INSERT INTO Applications
+(StudentID, JobRoleID, ApplicationDate, ApplicationStatus, InterviewScore, FinalStatus)
+VALUES
+(1, 1, '2026-07-01', 'Shortlisted', 88, 'Selected'),
+(1, 2, '2026-07-05', 'Shortlisted', 91, 'Selected'),
+(2, 2, '2026-07-02', 'Shortlisted', 89, 'Selected'),
+(2, 6, '2026-07-07', 'Shortlisted', 87, 'Selected'),
+(3, 3, '2026-07-03', 'Shortlisted', 82, 'Pending'),
+(3, 4, '2026-07-05', 'Interviewed', 84, 'Selected'),
+(4, 2, '2026-07-01', 'Shortlisted', 94, 'Selected'),
+(4, 7, '2026-07-08', 'Shortlisted', 96, 'Selected'),
+(5, 9, '2026-07-04', 'Interviewed', 65, 'Rejected'),
+(5, 10, '2026-07-06', 'Applied', NULL, 'Pending'),
+(6, 4, '2026-07-02', 'Shortlisted', 90, 'Selected'),
+(6, 12, '2026-07-10', 'Shortlisted', 92, 'Selected'),
+(7, 9, '2026-07-03', 'Interviewed', 60, 'Rejected'),
+(8, 1, '2026-07-02', 'Shortlisted', 86, 'Selected'),
+(8, 2, '2026-07-06', 'Shortlisted', 88, 'Selected'),
+(9, 3, '2026-07-04', 'Shortlisted', 80, 'Pending'),
+(9, 5, '2026-07-08', 'Interviewed', 79, 'Rejected'),
+(10, 2, '2026-07-01', 'Shortlisted', 93, 'Selected'),
+(10, 7, '2026-07-09', 'Shortlisted', 91, 'Selected'),
+(11, 9, '2026-07-04', 'Interviewed', 58, 'Rejected'),
+(12, 4, '2026-07-02', 'Shortlisted', 90, 'Selected'),
+(12, 12, '2026-07-10', 'Shortlisted', 95, 'Selected'),
+(13, 1, '2026-07-05', 'Interviewed', 75, 'Rejected'),
+(13, 5, '2026-07-07', 'Shortlisted', 81, 'Pending'),
+(14, 5, '2026-07-03', 'Shortlisted', 86, 'Selected'),
+(14, 9, '2026-07-06', 'Interviewed', 82, 'Rejected'),
+(15, 1, '2026-07-01', 'Shortlisted', 87, 'Selected'),
+(15, 6, '2026-07-09', 'Shortlisted', 90, 'Selected'),
+(16, 3, '2026-07-04', 'Interviewed', 68, 'Rejected'),
+(16, 10, '2026-07-08', 'Applied', NULL, 'Pending'),
+(17, 9, '2026-07-03', 'Shortlisted', 78, 'Pending'),
+(18, 7, '2026-07-02', 'Shortlisted', 95, 'Selected'),
+(18, 8, '2026-07-10', 'Shortlisted', 97, 'Selected'),
+(19, 13, '2026-07-05', 'Interviewed', 64, 'Rejected'),
+(20, 4, '2026-07-03', 'Shortlisted', 85, 'Selected'),
+(20, 15, '2026-07-08', 'Interviewed', 83, 'Rejected'),
+(21, 2, '2026-07-01', 'Shortlisted', 92, 'Selected'),
+(21, 12, '2026-07-11', 'Shortlisted', 94, 'Selected'),
+(22, 5, '2026-07-04', 'Interviewed', 76, 'Rejected'),
+(23, 9, '2026-07-05', 'Applied', NULL, 'Pending'),
+(24, 4, '2026-07-02', 'Shortlisted', 91, 'Selected'),
+(24, 7, '2026-07-09', 'Shortlisted', 93, 'Selected'),
+(25, 9, '2026-07-03', 'Interviewed', 79, 'Rejected'),
+(26, 1, '2026-07-01', 'Shortlisted', 88, 'Selected'),
+(26, 2, '2026-07-06', 'Shortlisted', 90, 'Selected'),
+(27, 3, '2026-07-04', 'Interviewed', 74, 'Rejected'),
+(28, 5, '2026-07-03', 'Shortlisted', 86, 'Selected'),
+(29, 13, '2026-07-05', 'Interviewed', 67, 'Rejected'),
+(30, 2, '2026-07-02', 'Shortlisted', 94, 'Selected'),
+(30, 7, '2026-07-10', 'Shortlisted', 96, 'Selected');
+
+-- ANALYSIS...........................................................................
+select *
+from students
+where cgpa > 8.5;  -- cgpa above 8.5
+
+select *
+from students
+where department = 'computer science';  -- computer science students
+
+
+select studentname, city
+from students
+where city in ('raipur', 'bhilai', 'nagpur');  -- students from selected cities
+
+select studentname
+from students
+where studentname like 'a%';  -- names beginning with a
+
+select studentname
+from students
+where studentname like '%an%';  -- names containing "an"
+
+select studentname, cgpa
+from students
+where cgpa between 7 and 9;  -- cgpa between 7 and 9
+
+select studentname, email
+from students
+where phone is null;  -- missing phone numbers
+
+select studentname, phone
+from students
+where phone is not null; -- students having phone numbers
+
+select studentname, department
+from students
+where graduationyear = 2027; -- graduating in 2027
+
+select studentname, placementstatus
+from students
+where placementstatus in ('Placed', 'Shortlisted'); -- placed or shortlisted
+
+select *
+from companies
+where industry = 'IT Services'; -- it service
+
+
+select *    -- company and job analysis
+from jobroles
+where packagelpa > 8;
+select rolename, packagelpa
+from jobroles
+where packagelpa between 5 and 10;
+select rolename, vacancies
+from jobroles
+where vacancies > 3;
+select *
+from companies
+where companyname like 'T%';
+select *
+from jobroles
+where minimumcgpa > 8;
+select *
+from companies
+where companylocation in ('Bengaluru', 'Pune');
+
+
+-- Aggregation.....
+select count(*) as totalstudents
+from students; -- total students
+select round(avg(cgpa), 2) as averagecgpa
+from students; -- average cgpa
+select max(cgpa) as highestcgpa
+from students; -- highest cgpa
+select min(cgpa) as lowestcgpa
+from students; -- lowest cgpa
+select count(*) as totalcompanies
+from companies; -- total companies
+select count(*) as totalapplications
+from applications; -- total applications
+select round(avg(packagelpa), 2) as averagepackage
+from jobroles; -- average package
+select max(packagelpa) as highestpackage
+from jobroles; -- highest package
+
+select
+    department,
+    count(*) as studentcount,
+    round(avg(cgpa), 2) as averagecgpa,
+    max(cgpa) as highestcgpa,
+    min(cgpa) as lowestcgpa
+from students
+group by department; -- department wise analysis
+
+select
+c.companyname,
+    count(j.jobroleid) as numberofroles,
+    sum(j.vacancies) as totalvacancies,
+    round(avg(j.packagelpa), 2) as averagepackage,
+    max(j.packagelpa) as highestpackage
+from companies c
+join jobroles j
+    on c.companyid = j.companyid
+group by c.companyid, c.companyname;  -- analysis
+
+-- HAVING............
+select 
+department, 
+count(*) as studentcount 
+from students 
+group by department 
+having count(*) > 5;  -- departments having more than 5 students
+
+select
+department,
+round(avg(cgpa), 2) as averagecgpa
+from students
+group by department
+having avg(cgpa) > 8;  -- departments with average cgpa above 8
+
+select
+c.companyname,
+count(j.jobroleid) as rolecount
+from companies c
+join jobroles j
+on c.companyid = j.companyid
+group by c.companyid, c.companyname
+having count(j.jobroleid) > 2;  -- companies offering more than 2 roles
+
+-- Join analysis...............
+select
+s.studentname,
+c.companyname,
+j.rolename,
+j.packagelpa,
+a.applicationstatus,
+a.finalstatus
+from students s
+join applications a
+on s.studentid = a.studentid
+join jobroles j
+on a.jobroleid = j.jobroleid
+join companies c
+on j.companyid = c.companyid;      -- complete application details
+
+select          -- every student and their application
+s.studentname,
+a.applicationid,
+a.applicationstatus
+from students s
+left join applications a
+on s.studentid = a.studentid;
+
+select   -- students who have not applied
+s.studentid,
+s.studentname
+from students s
+left join applications a
+on s.studentid = a.studentid
+where a.applicationid is null;
+
+select   -- companies and their roles
+c.companyname,
+j.rolename,
+j.packagelpa,
+j.vacancies
+from companies c
+left join jobroles j
+on c.companyid = j.companyid;
+
+select   -- students applying to packages above 8 lpa
+s.studentname,
+c.companyname,
+j.rolename,
+j.packagelpa
+from students s
+join applications a
+on s.studentid = a.studentid
+join jobroles j
+on a.jobroleid = j.jobroleid
+join companies c
+on j.companyid = c.companyid
+where j.packagelpa > 8;
+
+-- recruitment performance
+select
+c.companyname,
+count(a.applicationid) as applications,
+sum(case when a.finalstatus = 'selected' then 1 else 0 end) as selected,
+sum(case when a.finalstatus = 'rejected' then 1 else 0 end) as rejected,
+sum(case when a.finalstatus = 'pending' then 1 else 0 end) as pending,
+round(
+sum(case when a.finalstatus = 'selected' then 1 else 0 end)
+* 100.0 / count(a.applicationid),
+        2
+    ) as selectionrate
+from companies c
+join jobroles j
+on c.companyid = j.companyid
+join applications a
+on j.jobroleid = a.jobroleid
+group by c.companyid, c.companyname;
+
+
+select    -- companies with select rate above 20 %
+c.companyname,
+round(
+sum(case when a.finalstatus = 'selected' then 1 else 0 end)
+* 100.0 / count(a.applicationid),
+        2
+    ) as selectionrate
+from companies c
+join jobroles j
+on c.companyid = j.companyid
+join applications a
+on j.jobroleid = a.jobroleid
+group by c.companyid, c.companyname
+having
+sum(case when a.finalstatus = 'selected' then 1 else 0 end)
+* 100.0 / count(a.applicationid) > 20;
+
+-- top students..............................
+select   -- top 10 cgpa
+studentname,
+department,
+cgpa
+from students
+order by cgpa desc, studentname asc
+limit 10;
+select   -- top interview score
+s.studentname,
+a.interviewscore
+from students s
+join applications a
+on s.studentid = a.studentid
+where a.interviewscore is not null
+order by a.interviewscore desc
+limit 10;
+
+-- subqueries.............................
+select    -- students above average cgpa
+studentname,
+cgpa
+from students
+where cgpa > (
+select avg(cgpa)
+from students
+);
+select   -- roles above average package
+rolename,
+packagelpa
+from jobroles
+where packagelpa > (
+select avg(packagelpa)
+from jobroles
+);
+select distinct   -- companies above average package
+c.companyname
+from companies c
+join jobroles j
+on c.companyid = j.companyid
+where j.packagelpa > (
+select avg(packagelpa)
+from jobroles
+);
+
+-- advanced subqueries..............................
+select
+s.studentname,
+count(a.applicationid) as applicationcount
+from students s
+join applications a
+on s.studentid = a.studentid
+group by s.studentid, s.studentname
+having count(a.applicationid) > (
+select avg(applicationcount)
+from (
+select
+studentid,
+count(*) as applicationcount
+from applications
+group by studentid
+) as studentapplicationcounts
+);
+
+-- skills analysis...
+select            -- students with sql
+s.studentname,
+s.department
+from students s
+join studentskills ss
+on s.studentid = ss.studentid
+join skills sk
+on ss.skillid = sk.skillid
+where sk.skillname = 'sql';
+
+select  -- students with python and sql
+s.studentname
+from students s
+join studentskills ss
+on s.studentid = ss.studentid
+join skills sk
+on ss.skillid = sk.skillid
+where sk.skillname in ('sql', 'python')
+group by s.studentid, s.studentname
+having count(distinct sk.skillname) = 2;
+
+select   -- skills which are most common
+sk.skillname,
+count(ss.studentid) as studentcount
+from skills sk
+join studentskills ss
+on sk.skillid = ss.skillid
+group by sk.skillid, sk.skillname
+order by studentcount desc;
+
+select    -- avg cgpa by skill
+sk.skillname,
+round(avg(s.cgpa), 2) as averagecgpa
+from skills sk
+join studentskills ss
+on sk.skillid = ss.skillid
+join students s
+on ss.studentid = s.studentid
+group by sk.skillid, sk.skillname
+order by averagecgpa desc;
+
+-- union .............
+
+select                -- high cgpa
+studentid,
+studentname,
+'high cgpa' as category
+from students
+where cgpa >= 8.5;
+
+select  -- high interview score
+s.studentid,
+s.studentname,
+'high interview score' as category
+from students s
+join applications a
+on s.studentid = a.studentid
+where a.interviewscore >= 85;
+
+select     -- combine using union
+studentid,
+studentname
+from students
+where cgpa >= 8.5
+union
+select
+s.studentid,
+s.studentname
+from students s
+join applications a
+on s.studentid = a.studentid
+where a.interviewscore >= 85;
+
+-- data quality crises.......
+
+update students   -- correct cgpa 
+set cgpa = 8.20
+where studentid = 5;
+
+update applications  -- correct interview score 
+set interviewscore = 82
+where applicationid = 5;
+
+update jobroles   -- correct package 
+set packagelpa = 8.80
+where jobroleid = 2;
+
+update applications   -- correct application status 
+set applicationstatus = 'Shortlisted'
+where applicationid = 16;
+
+update students   -- replace missing phone number 
+set phone = '9876501031'
+where studentid = 17
+and phone is null;
+
+update students    -- updating placement status
+set placementstatus = 'Placed'
+where studentid = 17
+and studentid in (
+select studentid
+from applications
+where finalstatus = 'Selected'
+);
+
+-- calculated update
+set sql_safe_updates = 0;
+update jobroles
+set packagelpa = packagelpa * 1.05;
+set sql_safe_updates = 1;
+select * from jobroles;
+
+-- Delete.......................
+select
+s.studentid,
+s.studentname
+from students s
+left join applications a
+on s.studentid = a.studentid
+where a.applicationid is null;
+create table teststudents (
+studentid int primary key,
+studentname varchar(100)
+);
+insert into teststudents
+values
+(101, 'Test Student One'),
+(102, 'Test Student Two'),
+(103, 'Test Student Three');
+insert into teststudents
+values
+(101, 'Test Student One'),
+(102, 'Test Student Two'),
+(103, 'Test Student Three');
+delete from teststudents
+where studentid = 102;
+select *
+from teststudents;
+
+-- fixing
+-- delete
+select
+s.studentid,
+s.studentname
+from students s
+left join applications a
+on s.studentid = a.studentid
+where a.applicationid is null;
+-- create test table
+drop table if exists teststudents;
+create table teststudents (
+    studentid int primary key,
+    studentname varchar(100)
+);
+-- insert test students
+insert into teststudents
+values
+(101, 'Test Student One'),
+(102, 'Test Student Two'),
+(103, 'Test Student Three');
+-- delete one student
+delete from teststudents
+where studentid = 102;
+-- check remaining students
+select *
+from teststudents;
+
+-- truncate...
+truncate table teststudents;
+select *
+from teststudents;
+
+-- refferal integrity...
+-- relationship:
+-- companies
+--     ↓
+-- jobroles
+--     ↓
+-- applications
+
+-- test company
+insert into companies
+(companyname, industry, companylocation, companysize, minimumcgpa)
+values
+('Test Technologies', 'Technology', 'Raipur', 'Small', 6.00);
+
+-- test job role for the newly inserted company
+insert into jobroles
+(companyid, rolename, jobtype, minimumcgpa, packagelpa, vacancies)
+values
+(last_insert_id(), 'Test Developer', 'Full Time', 6.00, 5.00, 2);
+
+-- check the test company
+select *
+from companies
+where companyname = 'Test Technologies';
+
+-- check the job role connected to the test company
+select *
+from jobroles
+where rolename = 'Test Developer';
+
+-- transaction ..
+start transaction;
+update students
+set cgpa = 9.50
+where studentid = 5;
+select *
+from students
+where studentid = 5;
+rollback;
+select *
+from students
+where studentid = 5;
+
+-- example......
+start transaction;
+
+update students
+set cgpa = 8.30
+where studentid = 5;
+
+update students
+set placementstatus = 'shortlisted'
+where studentid = 5;
+
+commit;
+
+
+-- final buisness anaysis...
+
+select    -- department with highest average cgpa
+department,
+round(avg(cgpa), 2) as averagecgpa
+from students
+group by department
+order by averagecgpa desc
+limit 1;
+
+
+select    -- highest paying jb roles
+c.companyname,
+j.rolename,
+j.packagelpa
+from companies c
+join jobroles j
+on c.companyid = j.companyid
+order by j.packagelpa desc
+limit 5;
+
+
+select   -- student above university average cgpa
+studentname,
+department,
+cgpa
+from students
+where cgpa > (
+    select avg(cgpa)
+    from students
+)
+order by cgpa desc;
+
+
+select   -- most competetive job roles
+j.rolename,
+c.companyname,
+count(a.applicationid) as applicants
+from jobroles j
+join companies c
+on j.companyid = c.companyid
+left join applications a
+on j.jobroleid = a.jobroleid
+group by j.jobroleid, j.rolename, c.companyname
+order by applicants desc;
+
+
+select  -- students applying to multiple companies...
+s.studentname,
+count(distinct c.companyid) as companycount
+from students s
+join applications a
+on s.studentid = a.studentid
+join jobroles j
+on a.jobroleid = j.jobroleid
+join companies c
+on j.companyid = c.companyid
+group by s.studentid, s.studentname
+having count(distinct c.companyid) > 1
+order by companycount desc;
+
+
+select   -- selected students and their package
+s.studentname,
+c.companyname,
+j.rolename,
+j.packagelpa
+from students s
+join applications a
+on s.studentid = a.studentid
+join jobroles j
+on a.jobroleid = j.jobroleid
+join companies c
+on j.companyid = c.companyid
+where a.finalstatus = 'selected'
+order by j.packagelpa desc;
+
+
+select  -- students with high cgpa but rejected applications
+s.studentname,
+s.cgpa,
+c.companyname,
+j.rolename,
+a.interviewscore,
+a.finalstatus
+from students s
+join applications a
+on s.studentid = a.studentid
+join jobroles j
+on a.jobroleid = j.jobroleid
+join companies c
+on j.companyid = c.companyid
+where s.cgpa >= 8.5
+and a.finalstatus = 'rejected';
+
+
+select   -- most demanded skills
+sk.skillname,
+count(ss.studentid) as studentshavingskill
+from skills sk
+join studentskills ss
+on sk.skillid = ss.skillid
+group by sk.skillid, sk.skillname
+order by studentshavingskill desc;
+
+
+select -- companies with vacancies but low applications
+c.companyname,
+j.rolename,
+j.vacancies,
+count(a.applicationid) as applications
+from companies c
+join jobroles j
+on c.companyid = j.companyid
+left join applications a
+on j.jobroleid = a.jobroleid
+group by
+j.jobroleid,
+c.companyname,
+j.rolename,
+j.vacancies
+having count(a.applicationid) < j.vacancies;
+
+
+
+
+
+
+
+
+
